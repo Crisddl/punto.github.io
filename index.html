@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto de Venta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .product {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+        }
+        .cart {
+            margin-top: 20px;
+        }
+        .cart-item {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 0;
+        }
+        .total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .payment-form {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Punto de Venta</h1>
+
+    <div class="products">
+        <div class="product">
+            <h2>Crayones</h2>
+            <p>Precio: Q10</p>
+            <button onclick="addToCart('Crayones', 10)">Agregar al carrito</button>
+        </div>
+        <div class="product">
+            <h2>Lapiceros</h2>
+            <p>Precio: Q20</p>
+            <button onclick="addToCart('Lapiceros', 20)">Agregar al carrito</button>
+        </div>
+        <div class="product">
+            <h2>Cuaderno</h2>
+            <p>Precio: Q30</p>
+            <button onclick="addToCart('Cuaderno', 30)">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <div class="cart">
+        <h2>Carrito de Compras</h2>
+        <div id="cart-items"></div>
+        <div class="total">Subtotal: Q<span id="subtotal">0</span></div>
+        <div class="total">Impuestos (12%): Q<span id="tax">0</span></div>
+        <div class="total">Total: Q<span id="total">0</span></div>
+        <button onclick="showPaymentForm()">Pagar</button>
+    </div>
+
+    <div class="payment-form hidden" id="payment-form">
+        <h2>Formulario de Pago</h2>
+        <label for="card-number">Número de Tarjeta:</label>
+        <input type="text" id="card-number" required><br><br>
+        <label for="card-name">Nombre en la Tarjeta:</label>
+        <input type="text" id="card-name" required><br><br>
+        <label for="card-expiry">Fecha de Expiración:</label>
+        <input type="text" id="card-expiry" placeholder="MM/AA" required><br><br>
+        <label for="card-cvv">CVV:</label>
+        <input type="text" id="card-cvv" required><br><br>
+        <button onclick="completeTransaction()">Completar Transacción</button>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                subtotal += item.price;
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        ${item.name} - Q${item.price}
+                        <button onclick="removeFromCart(${index})">Eliminar</button>
+                    </div>
+                `;
+            });
+
+            const tax = subtotal * 0.12;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('tax').innerText = tax.toFixed(2);
+            document.getElementById('total').innerText = total.toFixed(2);
+        }
+
+        function showPaymentForm() {
+            document.getElementById('payment-form').classList.remove('hidden');
+        }
+
+        function completeTransaction() {
+            const cardNumber = document.getElementById('card-number').value;
+            const cardName = document.getElementById('card-name').value;
+            const cardExpiry = document.getElementById('card-expiry').value;
+            const cardCVV = document.getElementById('card-cvv').value;
+
+            if (cardNumber && cardName && cardExpiry && cardCVV) {
+                alert('Transacción completada con éxito');
+                cart = [];
+                updateCart();
+                document.getElementById('payment-form').classList.add('hidden');
+            } else {
+                alert('Por favor complete todos los campos del formulario de pago');
+            }
+        }
+    </script>
+</body>
+</html>
